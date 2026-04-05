@@ -308,6 +308,32 @@
       font-weight: 700;
     }
 
+    .profile-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .profile-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(56, 112, 199, 0.08);
+      border: 1px solid rgba(56, 112, 199, 0.12);
+      color: #3f587a;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .profile-note {
+      margin-top: 10px;
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .source-stack {
       display: flex;
       flex-wrap: wrap;
@@ -587,13 +613,13 @@
     <section class="hero">
       <div class="eyebrow">Emoji Sound Project</div>
       <h1>이모지 사운드 데모</h1>
-      <p class="lede">이 페이지는 독립된 이모지 사운드 프로젝트의 현재 매핑과 재생 감각을 바로 들어보는 단일 데모입니다. 기본 운영 규칙은 effect마다 `synth + Freesound`를 한 쌍으로 유지하는 것이고, 카드 안에서 현재 선택, 대표 preview, 추가 후보까지 바로 비교할 수 있게 구성했습니다.</p>
+      <p class="lede">이 페이지는 독립된 이모지 사운드 프로젝트의 현재 매핑과 재생 감각을 바로 들어보는 단일 데모입니다. 기본 운영 규칙은 effect마다 `synth + Freesound`를 한 쌍으로 유지하는 것이고, 카드 안에서 현재 선택, 대표 preview, 추가 후보, 그리고 감정 기반 사운드 프로필까지 바로 비교할 수 있게 구성했습니다.</p>
 
       <div class="top-grid">
         <div class="panel">
           <h2>트윗처럼 미리 듣기</h2>
           <p>입력한 텍스트에서 이모지만 추출해서, 현재 리더와 같은 순서/중복 규칙으로 재생합니다.</p>
-          <textarea id="composer" spellcheck="false">😂😂🔥👏❤️🎉</textarea>
+          <textarea id="composer" spellcheck="false">😂🔥👏❤️🎉😡😮🌸⚠️🐣</textarea>
           <div class="actions">
             <button id="playInputBtn" class="primary" type="button">입력 재생</button>
             <button id="randomBtn" class="ghost" type="button">랜덤 조합</button>
@@ -624,7 +650,7 @@
               <span>Freesound 페어 보유</span>
             </div>
           </div>
-          <p class="footer-note">슬라이더 조정값은 이 데모 안에서 effect별로 따로 기억됩니다. 요청하신 `😂 / 🔥 / 👏 / ❤️ / 🎉` 대응 효과는 Featured 카드로 먼저 올려뒀고, 이제는 preview가 있는 effect마다 `synth / Freesound`를 같이 보관하는 구조로 관리합니다.</p>
+          <p class="footer-note">슬라이더 조정값은 이 데모 안에서 effect별로 따로 기억됩니다. 요청하신 `😂 / 🔥 / 👏 / ❤️ / 🎉` 대응 효과는 Featured 카드로 먼저 올려뒀고, 이제는 preview가 있는 effect마다 `synth / Freesound`를 같이 보관하면서 감정군, 설계 방식, valence/arousal 성격도 함께 관리합니다.</p>
         </div>
       </div>
     </section>
@@ -633,7 +659,7 @@
       <div class="section-header">
         <div>
           <h2>효과 묶음별 듣기</h2>
-          <p>같은 사운드를 공유하는 이모지를 묶어서 듣고, 가능하면 paired Freesound도 바로 비교할 수 있습니다.</p>
+          <p>같은 사운드를 공유하는 이모지를 묶어서 듣고, 가능하면 paired Freesound도 바로 비교할 수 있습니다. 각 카드의 프로필 칩은 감정 기반 설계 방향을 보여줍니다.</p>
         </div>
       </div>
       <div id="effectGrid" class="effect-grid"></div>

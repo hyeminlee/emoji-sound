@@ -19,8 +19,32 @@
   let activePlayback = null;
   const sampleBufferCache = new Map();
   const failedSampleUrls = new Set();
-  const FEATURED_EFFECT_IDS = new Set(["laugh", "fire", "clap", "heart", "party"]);
+  const FEATURED_EFFECT_IDS = new Set(["laugh", "fire", "clap", "heart", "party", "cheer", "anger", "shock", "bloom", "warning"]);
   const SPOTLIGHT_EFFECT_IDS = new Set(FREESOUND_CATALOG.spotlightEffectIds || []);
+  const FAMILY_LABELS = Object.freeze({
+    affection: "애정",
+    animal: "동물",
+    calm: "평온",
+    celebration: "축하",
+    comedy: "코믹",
+    expression: "감정",
+    impact: "임팩트",
+    magic: "반짝",
+    meme: "밈",
+    motion: "움직임",
+    music: "음악",
+    nature: "자연",
+    object: "오브젝트",
+    reaction: "리액션",
+    ritual: "의식",
+    spooky: "오싹",
+    ui: "UI",
+  });
+  const MODE_LABELS = Object.freeze({
+    earcon: "earcon",
+    "auditory-icon": "auditory icon",
+    "reaction-sfx": "reaction sfx",
+  });
   const TUNING_STORAGE_KEY = "emoji_sound_demo_tuning_v3";
   const TUNING_CONTROLS = [
     { key: "speed", label: "속도", min: 0.65, max: 1.7, step: 0.01 },
@@ -175,6 +199,10 @@
     return EMOJI_SOUND_MAP.effects?.[effectId] || null;
   }
 
+  function getEffectProfile(effectId = "") {
+    return EMOJI_SOUND_MAP.effectProfiles?.[effectId] || null;
+  }
+
   function getFreesoundEffect(effectId = "") {
     return FREESOUND_CATALOG.effects?.[effectId] || null;
   }
@@ -196,6 +224,25 @@
 
   function countPreviewPairs() {
     return Object.keys(EMOJI_SOUND_MAP.effects || {}).filter((effectId) => hasPreviewPair(effectId)).length;
+  }
+
+  function describeLevel(value = 0.5) {
+    if (value >= 0.72) return "높음";
+    if (value >= 0.44) return "중간";
+    return "낮음";
+  }
+
+  function buildProfilePills(effectId = "") {
+    const profile = getEffectProfile(effectId);
+    if (!profile) return [];
+
+    return [
+      FAMILY_LABELS[profile.family] || profile.family,
+      MODE_LABELS[profile.mode] || profile.mode,
+      `긍정 ${describeLevel(profile.valence)}`,
+      `각성 ${describeLevel(profile.arousal)}`,
+      `밝기 ${describeLevel(profile.brightness)}`,
+    ];
   }
 
   function createPreviewAudio(effectId = "", preview = null) {
@@ -789,6 +836,9 @@
       meta.className = "effect-meta";
       meta.textContent = `${entry.effectId} · ${entry.emojis.length} emojis`;
 
+      const profile = getEffectProfile(entry.effectId);
+      const profilePills = buildProfilePills(entry.effectId);
+
       const sourceConfig = getFreesoundEffect(entry.effectId);
       const preferredPreview = getPreferredPreview(entry.effectId);
       const extraPreviews = (sourceConfig?.previews || []).filter((preview) => preview.id !== preferredPreview?.id);
@@ -813,6 +863,25 @@
 
       const emojiRow = document.createElement("div");
       emojiRow.className = "emoji-row";
+
+      let profileRow = null;
+      if (profilePills.length) {
+        profileRow = document.createElement("div");
+        profileRow.className = "profile-row";
+        profilePills.forEach((pill) => {
+          const chip = document.createElement("div");
+          chip.className = "profile-pill";
+          chip.textContent = pill;
+          profileRow.appendChild(chip);
+        });
+      }
+
+      let profileNote = null;
+      if (profile?.note) {
+        profileNote = document.createElement("div");
+        profileNote.className = "profile-note";
+        profileNote.textContent = profile.note;
+      }
 
       entry.emojis.forEach((emoji) => {
         const button = document.createElement("button");
@@ -903,6 +972,8 @@
 
       card.appendChild(badgeRow);
       card.appendChild(meta);
+      if (profileRow) card.appendChild(profileRow);
+      if (profileNote) card.appendChild(profileNote);
       card.appendChild(sourceStack);
       card.appendChild(emojiRow);
       card.appendChild(tuningGrid);

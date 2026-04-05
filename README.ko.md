@@ -1,13 +1,15 @@
 # Emoji Sound
 
 [![Live Demo](https://img.shields.io/badge/demo-live-d96f3b?style=flat-square)](https://hyeminlee.github.io/emoji-sound/)
-![Emoji Count](https://img.shields.io/badge/emoji-134-4c8bf5?style=flat-square)
-![Effect Count](https://img.shields.io/badge/effects-29-2f9e72?style=flat-square)
+![Emoji Count](https://img.shields.io/badge/emoji-280-4c8bf5?style=flat-square)
+![Effect Count](https://img.shields.io/badge/effects-41-2f9e72?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-111111?style=flat-square)
 
 [English](./README.md) | [한국어](./README.ko.md)
 
 브라우저에서 바로 들어볼 수 있는 독립형 이모지 사운드 매핑 프로젝트입니다.
+
+이번 버전은 매핑을 280개 이모지, 41개 effect 그룹까지 넓혔고, 전체 이모지 커버리지를 향한 감정 기반 프로필 구조도 같이 넣었습니다.
 
 ![Emoji Sound Demo Preview](./assets/demo-preview.svg)
 
@@ -19,6 +21,7 @@
 - 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md)
 - 크레딧: [CREDITS.md](./CREDITS.md)
 - 라이선스: [LICENSE](./LICENSE)
+- 리서치 노트: [RESEARCH.ko.md](./RESEARCH.ko.md)
 
 ## GitHub Pages
 - 현재 루트 정적 파일 기준으로 배포되도록 준비되어 있습니다.

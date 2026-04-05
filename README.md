@@ -1,13 +1,15 @@
 # Emoji Sound
 
 [![Live Demo](https://img.shields.io/badge/demo-live-d96f3b?style=flat-square)](https://hyeminlee.github.io/emoji-sound/)
-![Emoji Count](https://img.shields.io/badge/emoji-134-4c8bf5?style=flat-square)
-![Effect Count](https://img.shields.io/badge/effects-29-2f9e72?style=flat-square)
+![Emoji Count](https://img.shields.io/badge/emoji-280-4c8bf5?style=flat-square)
+![Effect Count](https://img.shields.io/badge/effects-41-2f9e72?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-111111?style=flat-square)
 
 [English](./README.md) | [한국어](./README.ko.md)
 
 Standalone emoji-to-sound mapping project with a browser demo.
+
+This version expands the map to 280 emoji entries and 41 effect groups, and adds research-backed effect profiles for future full-emoji coverage.
 
 ![Emoji Sound Demo Preview](./assets/demo-preview.svg)
 
@@ -20,6 +22,7 @@ Standalone emoji-to-sound mapping project with a browser demo.
 - Contribution guide: [CONTRIBUTING.md](./CONTRIBUTING.md)
 - Credits: [CREDITS.md](./CREDITS.md)
 - License: [LICENSE](./LICENSE)
+- Research notes: [RESEARCH.md](./RESEARCH.md)
 
 ## GitHub Pages
 - This repo is prepared for root-level static publishing.
