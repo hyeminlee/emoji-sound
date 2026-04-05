@@ -468,35 +468,115 @@
     }),
     cheer: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "cheer-core",
+      previews: freezePreviews([
+        {
+          id: "cheer-core",
+          title: "Crowd Cheer 5",
+          subtitle: "Krizin · CC0 · short crowd lift",
+          previewPath: "assets/freesound-previews/fs-cheer-preview.mp3",
+          sourceUrl: "https://freesound.org/people/Krizin/sounds/651646/",
+          note: "`🥳`와 `🙌` 계열 비교용으로 넣은 짧은 crowd cheer입니다.",
+        },
+      ]),
     }),
     gloom: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "gloom-core",
+      previews: freezePreviews([
+        {
+          id: "gloom-core",
+          title: "Sad Chime Effect",
+          subtitle: "zembacraftworks · CC0 · downbeat chime",
+          previewPath: "assets/freesound-previews/fs-gloom-preview.mp3",
+          sourceUrl: "https://freesound.org/people/zembacraftworks/sounds/455289/",
+          note: "`😔`와 `☹️` 쪽에 붙는 짧은 sad chime 비교안입니다.",
+        },
+      ]),
     }),
     anger: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "anger-core",
+      previews: freezePreviews([
+        {
+          id: "anger-core",
+          title: "Retro, Angry Neighbor Knocking Your Door Lol.wav",
+          subtitle: "LilMati · CC0 · cartoony knock hit",
+          previewPath: "assets/freesound-previews/fs-anger-preview.mp3",
+          sourceUrl: "https://freesound.org/people/LilMati/sounds/658269/",
+          note: "`😤`와 `😡` 쪽에 어울리는 짧은 cartoony knock 계열입니다.",
+        },
+      ]),
     }),
     shock: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "shock-core",
+      previews: freezePreviews([
+        {
+          id: "shock-core",
+          title: "Metal Gear Solid Inspired Alert Surprise SFX",
+          subtitle: "djlprojects · CC0 · alert ping",
+          previewPath: "assets/freesound-previews/fs-shock-preview.mp3",
+          sourceUrl: "https://freesound.org/people/djlprojects/sounds/413641/",
+          note: "`😮`와 `😱` 계열 비교용으로 넣은 짧은 surprise alert입니다.",
+        },
+      ]),
     }),
     bloom: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "bloom-core",
+      previews: freezePreviews([
+        {
+          id: "bloom-core",
+          title: "Bell ding 1.wav",
+          subtitle: "5ro4 · CC0 · floral bell bloom",
+          previewPath: "assets/freesound-previews/fs-bloom-preview.mp3",
+          sourceUrl: "https://freesound.org/people/5ro4/sounds/611113/",
+          note: "`🌸`와 `🌷`는 너무 사실적인 자연음보다 가벼운 bell bloom이 더 잘 맞아서 sparkle 계열 CC0 소스를 재사용했습니다.",
+        },
+      ]),
     }),
     leaf: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "leaf-core",
+      previews: freezePreviews([
+        {
+          id: "leaf-core",
+          title: "rustling leaves 08.mp3",
+          subtitle: "TRP · CC0 · trimmed leaf rustle",
+          previewPath: "assets/freesound-previews/fs-leaf-preview.mp3",
+          sourceUrl: "https://freesound.org/people/TRP/sounds/575223/",
+          note: "`🍃`와 `🌿` 계열 비교용으로 1.55초 구간만 잘라 넣은 leaf rustle입니다.",
+        },
+      ]),
     }),
     sun: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "sun-core",
+      previews: freezePreviews([
+        {
+          id: "sun-core",
+          title: "morning bell.wav",
+          subtitle: "barkenov · CC0 · warm morning bell",
+          previewPath: "assets/freesound-previews/fs-sun-preview.mp3",
+          sourceUrl: "https://freesound.org/people/barkenov/sounds/251232/",
+          note: "`☀️`와 `🌞` 계열에 맞춰 앞부분만 잘라 넣은 밝은 morning bell입니다.",
+        },
+      ]),
     }),
     storm: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "storm-core",
+      previews: freezePreviews([
+        {
+          id: "storm-core",
+          title: "thunder.rumble.ogg",
+          subtitle: "xUMR · CC0 · distant thunder",
+          previewPath: "assets/freesound-previews/fs-storm-preview.mp3",
+          sourceUrl: "https://freesound.org/people/xUMR/sounds/486557/",
+          note: "`⛈️`와 `🌩️` 쪽에 붙는 낮은 thunder rumble 구간입니다.",
+        },
+      ]),
     }),
     gift: Object.freeze({
       selectedSource: "synth",

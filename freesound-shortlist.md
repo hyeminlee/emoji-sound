@@ -163,6 +163,40 @@ Reviewed on `2026-04-05`.
 - Primary: [Paper, crumple, rip, unwrap gift.mp3](https://freesound.org/people/JohnsonBrandEditing/sounds/173939/)
   - Why: direct semantic match for presents and packaging, and still playful enough when shortened.
 
+## Phase 4 Picks
+
+### `fs-cheer.wav`
+- Primary: [Crowd Cheer 5](https://freesound.org/people/Krizin/sounds/651646/)
+  - Why: `🙌 🥳 🎊` 계열에 잘 맞는 짧은 crowd lift이고, trim 후에도 TTS보다 과하게 튀지 않습니다.
+
+### `fs-gloom.wav`
+- Primary: [Sad Chime Effect](https://freesound.org/people/zembacraftworks/sounds/455289/)
+  - Why: 실제 울음소리보다 추상적인 downbeat chime이라 `😔 ☹️` 쪽에 더 안전하고, effect스럽게 들립니다.
+
+### `fs-anger.wav`
+- Primary: [Retro, Angry Neighbor Knocking Your Door Lol.wav](https://freesound.org/people/LilMati/sounds/658269/)
+  - Why: 과한 distortion 없이도 화난 리듬감이 있고, `😤 😡` 쪽에 cartoony impact로 잘 읽힙니다.
+
+### `fs-shock.wav`
+- Primary: [Metal Gear Solid Inspired Alert Surprise SFX](https://freesound.org/people/djlprojects/sounds/413641/)
+  - Why: 너무 시끄러운 scream 계열 대신, 짧고 즉시 읽히는 surprise alert라 `😮 😱` 비교용으로 적합합니다.
+
+### `fs-bloom.wav`
+- Primary: [Bell ding 1.wav](https://freesound.org/people/5ro4/sounds/611113/)
+  - Why: 꽃 그룹은 자연음을 억지로 넣는 것보다 밝은 bell bloom이 더 완성도가 높아서 sparkle 소스를 재사용했습니다.
+
+### `fs-leaf.wav`
+- Primary: [rustling leaves 08.mp3](https://freesound.org/people/TRP/sounds/575223/)
+  - Why: 원본은 길지만 앞부분을 짧게 자르면 `🍃 🌿`에 맞는 가벼운 rustle cue로 잘 작동합니다.
+
+### `fs-sun.wav`
+- Primary: [morning bell.wav](https://freesound.org/people/barkenov/sounds/251232/)
+  - Why: 자연 새소리보다 더 추상적이고, `☀️ 🌞`에 필요한 밝은 시작감이 분명합니다.
+
+### `fs-storm.wav`
+- Primary: [thunder.rumble.ogg](https://freesound.org/people/xUMR/sounds/486557/)
+  - Why: thunder의 질감은 남기면서도 길이를 줄여서 `⛈️ 🌩️`에 붙는 low rumble gesture로 만들기 좋았습니다.
+
 ## Import Tips
 - Convert everything to `wav` before shipping, even if the Freesound source is `mp3`, `flac`, or `ogg`.
 - Trim to roughly `1.0s` to `1.2s`.
