@@ -3,6 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/demo-live-d96f3b?style=flat-square)](https://hyeminlee.github.io/emoji-sound/)
 ![Emoji Count](https://img.shields.io/badge/emoji-134-4c8bf5?style=flat-square)
 ![Effect Count](https://img.shields.io/badge/effects-29-2f9e72?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-111111?style=flat-square)
 
 [English](./README.md) | [한국어](./README.ko.md)
 
@@ -14,6 +15,11 @@ Standalone emoji-to-sound mapping project with a browser demo.
 - Live demo: [https://hyeminlee.github.io/emoji-sound/](https://hyeminlee.github.io/emoji-sound/)
 - Local: open `demo.html`
 - GitHub Pages: use `index.html` as the default entrypoint
+
+## Docs
+- Contribution guide: [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Credits: [CREDITS.md](./CREDITS.md)
+- License: [LICENSE](./LICENSE)
 
 ## GitHub Pages
 - This repo is prepared for root-level static publishing.

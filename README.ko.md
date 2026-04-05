@@ -3,6 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/demo-live-d96f3b?style=flat-square)](https://hyeminlee.github.io/emoji-sound/)
 ![Emoji Count](https://img.shields.io/badge/emoji-134-4c8bf5?style=flat-square)
 ![Effect Count](https://img.shields.io/badge/effects-29-2f9e72?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-111111?style=flat-square)
 
 [English](./README.md) | [한국어](./README.ko.md)
 
@@ -13,6 +14,11 @@
 ## 데모 열기
 - 라이브 데모: [https://hyeminlee.github.io/emoji-sound/](https://hyeminlee.github.io/emoji-sound/)
 - 로컬 실행: `demo.html` 열기
+
+## 문서
+- 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md)
+- 크레딧: [CREDITS.md](./CREDITS.md)
+- 라이선스: [LICENSE](./LICENSE)
 
 ## GitHub Pages
 - 현재 루트 정적 파일 기준으로 배포되도록 준비되어 있습니다.
