@@ -41,6 +41,7 @@ This repository currently uses four broad rules:
 - `effectProfiles` in `emoji-sound-map.js` store a lightweight emotional design profile for each effect.
 - Demo cards surface family, design mode, and coarse valence/arousal/brightness labels.
 - Coverage is expanding by emotional family and semantic category, with the long-term target of all emoji.
+- The current expansion phase specifically grows food, animals, weather/night, transport, and object-tech domains so the system can move beyond reaction-heavy emoji.
 
 ## Important Product Constraint
 

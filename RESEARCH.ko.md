@@ -41,6 +41,7 @@
 - `emoji-sound-map.js`의 `effectProfiles`가 각 effect의 감정 기반 프로필을 저장합니다.
 - 데모 카드에서는 family, design mode, 그리고 valence/arousal/brightness 성격을 칩으로 보여줍니다.
 - 장기 목표는 전체 이모지 커버리지이며, 지금은 감정군과 의미 카테고리 단위로 확장하고 있습니다.
+- 현재 단계에서는 리액션 중심 구성을 넘어서 음식, 동물, 날씨/밤, 이동수단, 오브젝트/테크 영역을 넓히고 있습니다.
 
 ## 제품 제약
 

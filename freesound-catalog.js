@@ -466,10 +466,102 @@
         },
       ]),
     }),
+    cheer: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    gloom: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    anger: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    shock: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    bloom: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    leaf: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    sun: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    storm: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    gift: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    lock: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    chirp: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    warning: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    snack: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    sweet: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    drink: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    paw: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    marine: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    bug: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    moon: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    vehicle: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    tool: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    money: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
+    tech: Object.freeze({
+      selectedSource: "synth",
+      previews: freezePreviews([]),
+    }),
   });
 
   const catalog = Object.freeze({
-    version: "0.2.0",
+    version: "0.3.0",
     policy: Object.freeze({
       defaultPairingMode: "synth-plus-freesound",
       note: "Each effect should keep a synth identity and a paired Freesound audition when available.",

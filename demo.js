@@ -19,7 +19,23 @@
   let activePlayback = null;
   const sampleBufferCache = new Map();
   const failedSampleUrls = new Set();
-  const FEATURED_EFFECT_IDS = new Set(["laugh", "fire", "clap", "heart", "party", "cheer", "anger", "shock", "bloom", "warning"]);
+  const FEATURED_EFFECT_IDS = new Set([
+    "laugh",
+    "fire",
+    "clap",
+    "heart",
+    "party",
+    "cheer",
+    "anger",
+    "shock",
+    "bloom",
+    "warning",
+    "snack",
+    "paw",
+    "moon",
+    "vehicle",
+    "tech",
+  ]);
   const SPOTLIGHT_EFFECT_IDS = new Set(FREESOUND_CATALOG.spotlightEffectIds || []);
   const FAMILY_LABELS = Object.freeze({
     affection: "애정",
@@ -28,6 +44,7 @@
     celebration: "축하",
     comedy: "코믹",
     expression: "감정",
+    food: "음식",
     impact: "임팩트",
     magic: "반짝",
     meme: "밈",
