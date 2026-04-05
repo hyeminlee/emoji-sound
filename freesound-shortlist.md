@@ -101,6 +101,68 @@ Reviewed on `2026-04-05`.
 - Alternate: [Gasp!](https://freesound.org/people/ZerOcarina/sounds/232263/)
   - Why: good fallback if we decide `😭` should be a social reaction more than a literal cry.
 
+## Phase 3 Picks
+
+### `fs-snack.wav`
+- Primary: [Crunch.wav](https://freesound.org/people/LilMati/sounds/348112/)
+  - Why: very short, already framed as a game/reward crunch, and much more playful than literal chewing Foley.
+
+### `fs-sweet.wav`
+- Primary: [Pop 9](https://freesound.org/people/D.S.G./sounds/328119/)
+  - Why: tiny candy-pop energy that works well for desserts and sweet treats without sounding sticky or realistic.
+
+### `fs-drink.wav`
+- Primary: [sipping.wav](https://freesound.org/people/Reitanna/sounds/252275/)
+  - Why: short sip gesture that reads instantly in the demo and stays softer than speech.
+
+### `fs-paw.wav`
+- Primary: [12_DogPaw_Scratch_Rocks](https://freesound.org/people/16G_Panska_Dolezal_Stepan/sounds/498693/)
+  - Why: gives `🐶` and related animals a small tactile cue without becoming a full bark or long ambience.
+
+### `fs-marine.wav`
+- Primary: [Bubble sequence](https://freesound.org/people/PhonosUPF/sounds/487642/)
+  - Why: already processed and musical enough to feel like an effect, not just raw underwater ambience.
+
+### `fs-bug.wav`
+- Primary: [Bees buzzing](https://freesound.org/people/smand/sounds/521116/)
+  - Why: has enough insect identity to read immediately, but still trims down into a light buzzing bed.
+
+### `fs-chirp.wav`
+- Primary: [Birds Chirping](https://freesound.org/people/EdEddnEddie/sounds/844621/)
+  - Why: a simple outdoor chirp cue that works for `🐣`-type emoji once shortened.
+
+### `fs-moon.wav`
+- Primary: [wind chimes - single 04.wav](https://freesound.org/people/Anthousai/sounds/398496/)
+  - Why: reads like a quiet night bell rather than a bright ritual chime, which suits the moon group better.
+
+### `fs-vehicle.wav`
+- Primary: [car43.wav](https://freesound.org/people/car_sound/sounds/660051/)
+  - Why: gives transport emoji a clear pass-by reference point while the synth remains the safer default.
+
+### `fs-tool.wav`
+- Primary: [click 5.mp3](https://freesound.org/people/SomeoneCool15/sounds/423774/)
+  - Why: concise click with enough object feel to stand in for tools, switches, and mechanical interactions.
+
+### `fs-money.wav`
+- Primary: [CoinDrop8.wav](https://freesound.org/people/NickMorris/sounds/184744/)
+  - Why: a very readable coin cue that is short enough to stay in the emoji-SFX zone.
+
+### `fs-tech.wav`
+- Primary: [as_ab_al_computer_noise_9_16bit.wav](https://freesound.org/people/Clusman/sounds/543054/)
+  - Why: tiny digital beep that fits screens, batteries, phones, and gadget emoji without overpowering TTS.
+
+### `fs-warning.wav`
+- Primary: [Beep warning](https://freesound.org/people/SamsterBirdies/sounds/467882/)
+  - Why: one of the clearest direct matches in the whole batch, and already framed as a warning sound by the uploader.
+
+### `fs-lock.wav`
+- Primary: [door wood old open close creak rattle lock click.flac](https://freesound.org/people/kyles/sounds/455753/)
+  - Why: the source is long, but the opening click trims into a useful mechanical lock cue.
+
+### `fs-gift.wav`
+- Primary: [Paper, crumple, rip, unwrap gift.mp3](https://freesound.org/people/JohnsonBrandEditing/sounds/173939/)
+  - Why: direct semantic match for presents and packaging, and still playful enough when shortened.
+
 ## Import Tips
 - Convert everything to `wav` before shipping, even if the Freesound source is `mp3`, `flac`, or `ogg`.
 - Trim to roughly `1.0s` to `1.2s`.

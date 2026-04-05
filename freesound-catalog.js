@@ -500,68 +500,218 @@
     }),
     gift: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "gift-core",
+      previews: freezePreviews([
+        {
+          id: "gift-core",
+          title: "Paper, crumple, rip, unwrap gift.mp3",
+          subtitle: "JohnsonBrandEditing · CC0 · unwrap rustle",
+          previewPath: "assets/freesound-previews/fs-gift-preview.mp3",
+          sourceUrl: "https://freesound.org/people/JohnsonBrandEditing/sounds/173939/",
+          note: "`🎁` 계열 비교용으로 넣은 가벼운 선물 포장 해제 소리입니다.",
+        },
+      ]),
     }),
     lock: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "lock-core",
+      previews: freezePreviews([
+        {
+          id: "lock-core",
+          title: "door wood old open close creak rattle lock click.flac",
+          subtitle: "kyles · CC0 · mechanical click",
+          previewPath: "assets/freesound-previews/fs-lock-preview.mp3",
+          sourceUrl: "https://freesound.org/people/kyles/sounds/455753/",
+          note: "`🔒` 계열에 붙는 기계식 잠금 클릭 audition입니다.",
+        },
+      ]),
     }),
     chirp: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "chirp-core",
+      previews: freezePreviews([
+        {
+          id: "chirp-core",
+          title: "Birds Chirping",
+          subtitle: "EdEddnEddie · CC0 · soft bird bed",
+          previewPath: "assets/freesound-previews/fs-chirp-preview.mp3",
+          sourceUrl: "https://freesound.org/people/EdEddnEddie/sounds/844621/",
+          note: "`🐣` 계열 비교용으로 짧게 자른 새소리 preview입니다.",
+        },
+      ]),
     }),
     warning: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "warning-core",
+      previews: freezePreviews([
+        {
+          id: "warning-core",
+          title: "Beep warning",
+          subtitle: "SamsterBirdies · CC0 · alert ping",
+          previewPath: "assets/freesound-previews/fs-warning-preview.mp3",
+          sourceUrl: "https://freesound.org/people/SamsterBirdies/sounds/467882/",
+          note: "`⚠️` 계열에 가장 직접적인 경고형 beep 비교안입니다.",
+        },
+      ]),
     }),
     snack: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "snack-core",
+      previews: freezePreviews([
+        {
+          id: "snack-core",
+          title: "Crunch.wav",
+          subtitle: "LilMati · CC0 · reward crunch",
+          previewPath: "assets/freesound-previews/fs-snack-preview.mp3",
+          sourceUrl: "https://freesound.org/people/LilMati/sounds/348112/",
+          note: "`🍎`나 `🍜` 계열에 맞춰, 실제 먹는 소리보다 게임식 reward crunch 쪽으로 잡았습니다.",
+        },
+      ]),
     }),
     sweet: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "sweet-core",
+      previews: freezePreviews([
+        {
+          id: "sweet-core",
+          title: "Pop 9",
+          subtitle: "D.S.G. · CC0 · candy pop",
+          previewPath: "assets/freesound-previews/fs-sweet-preview.mp3",
+          sourceUrl: "https://freesound.org/people/D.S.G./sounds/328119/",
+          note: "`🍬`와 `🍰` 계열에 붙는 아주 짧은 캔디 팝 후보입니다.",
+        },
+      ]),
     }),
     drink: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "drink-core",
+      previews: freezePreviews([
+        {
+          id: "drink-core",
+          title: "sipping.wav",
+          subtitle: "Reitanna · CC0 · tiny sip",
+          previewPath: "assets/freesound-previews/fs-drink-preview.mp3",
+          sourceUrl: "https://freesound.org/people/Reitanna/sounds/252275/",
+          note: "`☕️`와 `🧋` 계열에 붙는 짧은 sip audition입니다.",
+        },
+      ]),
     }),
     paw: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "paw-core",
+      previews: freezePreviews([
+        {
+          id: "paw-core",
+          title: "12_DogPaw_Scratch_Rocks",
+          subtitle: "Stepan · CC0 · paw scratch",
+          previewPath: "assets/freesound-previews/fs-paw-preview.mp3",
+          sourceUrl: "https://freesound.org/people/16G_Panska_Dolezal_Stepan/sounds/498693/",
+          note: "`🐶` 계열에 붙는 가벼운 발톱/발소리 후보입니다.",
+        },
+      ]),
     }),
     marine: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "marine-core",
+      previews: freezePreviews([
+        {
+          id: "marine-core",
+          title: "Bubble sequence",
+          subtitle: "PhonosUPF · CC0 · processed bubble",
+          previewPath: "assets/freesound-previews/fs-marine-preview.mp3",
+          sourceUrl: "https://freesound.org/people/PhonosUPF/sounds/487642/",
+          note: "`🐟`나 `🐬` 계열에 맞춰 짧게 자른 processed bubble preview입니다.",
+        },
+      ]),
     }),
     bug: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "bug-core",
+      previews: freezePreviews([
+        {
+          id: "bug-core",
+          title: "Bees buzzing",
+          subtitle: "smand · CC0 · insect bed",
+          previewPath: "assets/freesound-previews/fs-bug-preview.mp3",
+          sourceUrl: "https://freesound.org/people/smand/sounds/521116/",
+          note: "`🐝`와 `🪰` 계열 비교용으로 짧게 자른 곤충 buzz preview입니다.",
+        },
+      ]),
     }),
     moon: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "moon-core",
+      previews: freezePreviews([
+        {
+          id: "moon-core",
+          title: "wind chimes - single 04.wav",
+          subtitle: "Anthousai · CC0 · night chime",
+          previewPath: "assets/freesound-previews/fs-moon-preview.mp3",
+          sourceUrl: "https://freesound.org/people/Anthousai/sounds/398496/",
+          note: "`🌙` 계열에 어울리는 조용한 야간 chime 비교안입니다.",
+        },
+      ]),
     }),
     vehicle: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "vehicle-core",
+      previews: freezePreviews([
+        {
+          id: "vehicle-core",
+          title: "car43.wav",
+          subtitle: "car_sound · CC0 · short pass-by",
+          previewPath: "assets/freesound-previews/fs-vehicle-preview.mp3",
+          sourceUrl: "https://freesound.org/people/car_sound/sounds/660051/",
+          note: "`🚗` 계열 비교용으로 짧게 자른 pass-by preview입니다.",
+        },
+      ]),
     }),
     tool: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "tool-core",
+      previews: freezePreviews([
+        {
+          id: "tool-core",
+          title: "click 5.mp3",
+          subtitle: "SomeoneCool15 · CC0 · clean click",
+          previewPath: "assets/freesound-previews/fs-tool-preview.mp3",
+          sourceUrl: "https://freesound.org/people/SomeoneCool15/sounds/423774/",
+          note: "`🔨`와 `🪛` 계열에 붙는 깔끔한 공구/UI 클릭 audition입니다.",
+        },
+      ]),
     }),
     money: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "money-core",
+      previews: freezePreviews([
+        {
+          id: "money-core",
+          title: "CoinDrop8.wav",
+          subtitle: "NickMorris · CC0 · coin clink",
+          previewPath: "assets/freesound-previews/fs-money-preview.mp3",
+          sourceUrl: "https://freesound.org/people/NickMorris/sounds/184744/",
+          note: "`💰`과 `🪙` 계열에 잘 붙는 짧은 코인 드롭 소리입니다.",
+        },
+      ]),
     }),
     tech: Object.freeze({
       selectedSource: "synth",
-      previews: freezePreviews([]),
+      preferredPreviewId: "tech-core",
+      previews: freezePreviews([
+        {
+          id: "tech-core",
+          title: "as_ab_al_computer_noise_9_16bit.wav",
+          subtitle: "Clusman · CC0 · digital beep",
+          previewPath: "assets/freesound-previews/fs-tech-preview.mp3",
+          sourceUrl: "https://freesound.org/people/Clusman/sounds/543054/",
+          note: "`💻`과 `📱` 계열에 붙는 짧은 디지털 beep 후보입니다.",
+        },
+      ]),
     }),
   });
 
   const catalog = Object.freeze({
-    version: "0.3.0",
+    version: "0.4.0",
     policy: Object.freeze({
       defaultPairingMode: "synth-plus-freesound",
       note: "Each effect should keep a synth identity and a paired Freesound audition when available.",
