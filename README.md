@@ -6,6 +6,11 @@ Standalone emoji-to-sound mapping project with a browser demo.
 - Local: open `demo.html`
 - GitHub Pages: use `index.html` as the default entrypoint
 
+## GitHub Pages
+- Recommended setup: `Settings -> Pages -> Deploy from a branch -> main -> /(root)`
+- Expected URL: `https://hyeminlee.github.io/emoji-sound/`
+- This repo includes `.nojekyll` so the static files can be served directly from the root branch without a Jekyll build.
+
 ## What is in this repo
 - `emoji-sound-map.js`: emoji-to-effect mapping and synth definitions
 - `freesound-catalog.js`: paired Freesound previews and current synth/preview selections
