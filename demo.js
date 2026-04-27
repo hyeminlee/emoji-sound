@@ -68,12 +68,24 @@
     { key: "pitch", label: "피치", min: 0.65, max: 1.8, step: 0.01 },
     { key: "intensity", label: "강도", min: 0.45, max: 1.9, step: 0.01 },
   ];
+  const SYNTH_PRESETS = [
+    { id: "warm", label: "Warm", tuning: { speed: 0.88, pitch: 0.82, intensity: 0.88 } },
+    { id: "bright", label: "Bright", tuning: { speed: 1.1, pitch: 1.22, intensity: 1.08 } },
+    { id: "punch", label: "Punch", tuning: { speed: 1.28, pitch: 0.98, intensity: 1.38 } },
+  ];
+  const SYNTH_PADS = [
+    { label: "Low", note: "낮고 둥글게", pitchScale: 0.78 },
+    { label: "Root", note: "현재 설정", pitchScale: 1 },
+    { label: "High", note: "높고 선명하게", pitchScale: 1.28 },
+  ];
   const FREESOUND_COMPARISON_COPY = Object.freeze({
     rocket: "비교 결과 `🚀`는 아직 synth가 제일 안정적이라 유지하고, 다른 Freesound 후보는 비교용으로 남겨뒀습니다.",
     zap: "비교 결과 `⚡`는 너무 가벼운 pop보다 지금의 `Zap.wav` 계열이 존재감과 안정감이 더 좋았습니다.",
     buzz: "비교 결과 `❌`는 fail horn보다 짧고 둥근 `Pop.ogg` 계열이 더 재밌고 부담이 적었습니다.",
   });
   const tuningState = loadTuningState();
+  const tuningControlBindings = new Map();
+  let selectedControllerEffectId = "laugh";
 
   function $(id) {
     return document.getElementById(id);
@@ -164,12 +176,25 @@
     const tuning = getEffectTuning(effectId);
     tuning[key] = sanitizeTuning({ ...tuning, [key]: value })[key];
     saveTuningState();
+    syncTuningControls(effectId);
+    return tuning;
+  }
+
+  function setEffectTuningValues(effectId, values = {}) {
+    const tuning = getEffectTuning(effectId);
+    const next = sanitizeTuning({ ...tuning, ...values });
+    tuning.speed = next.speed;
+    tuning.pitch = next.pitch;
+    tuning.intensity = next.intensity;
+    saveTuningState();
+    syncTuningControls(effectId);
     return tuning;
   }
 
   function resetEffectTuning(effectId = "") {
     tuningState[effectId] = createDefaultTuning(effectId);
     saveTuningState();
+    syncTuningControls(effectId);
     return tuningState[effectId];
   }
 
@@ -178,6 +203,26 @@
     if (key === "speed") return `${value.toFixed(2)}x`;
     if (key === "pitch") return `${value.toFixed(2)}x`;
     return value.toFixed(2);
+  }
+
+  function registerTuningControl(effectId, config, control) {
+    if (!tuningControlBindings.has(effectId)) {
+      tuningControlBindings.set(effectId, new Set());
+    }
+    tuningControlBindings.get(effectId).add({ config, control });
+  }
+
+  function syncTuningControls(effectId = "") {
+    const tuning = getEffectTuning(effectId);
+    const bindings = tuningControlBindings.get(effectId);
+    if (!bindings) return;
+
+    bindings.forEach(({ config, control }) => {
+      if (!control?.input || !control?.value) return;
+      const nextValue = tuning[config.key];
+      control.input.value = String(nextValue);
+      control.value.textContent = formatTuningValue(config.key, nextValue);
+    });
   }
 
   function segmentGraphemes(text = "") {
@@ -298,10 +343,13 @@
     return Math.max(760, Number(effect?.targetDurationMs) || Number(policy.defaultEffectDurationMs) || 1080);
   }
 
-  function applyEffectTuning(effectId = "", effect = null) {
+  function applyEffectTuning(effectId = "", effect = null, tuningOverride = null) {
     if (!effect) return null;
 
-    const tuning = sanitizeTuning(getEffectTuning(effectId));
+    const tuning = sanitizeTuning({
+      ...getEffectTuning(effectId),
+      ...(tuningOverride || {}),
+    });
     const speed = tuning.speed;
     const pitch = tuning.pitch;
     const intensity = tuning.intensity;
@@ -586,8 +634,8 @@
     return outputDurationMs;
   }
 
-  async function prepareEffectForPlayback(ctx, effectId = "", effect = null) {
-    const tunedEffect = applyEffectTuning(effectId, effect);
+  async function prepareEffectForPlayback(ctx, effectId = "", effect = null, tuningOverride = null) {
+    const tunedEffect = applyEffectTuning(effectId, effect, tuningOverride);
     if (!tunedEffect) return null;
 
     if (tunedEffect.sample?.assetPath) {
@@ -671,7 +719,7 @@
 
     const preparedPlan = [];
     for (const entry of plan) {
-      const effect = await prepareEffectForPlayback(ctx, entry.effectId, entry.effect);
+      const effect = await prepareEffectForPlayback(ctx, entry.effectId, entry.effect, entry.tuningOverride);
       if (!effect) continue;
       preparedPlan.push({
         ...entry,
@@ -820,7 +868,10 @@
     wrap.appendChild(head);
     wrap.appendChild(input);
 
-    return { wrap, input, value };
+    const control = { wrap, input, value };
+    registerTuningControl(effectId, config, control);
+
+    return control;
   }
 
   function renderEffectGrid() {
@@ -1141,6 +1192,125 @@
     return result.join("");
   }
 
+  function getControllerEffectId() {
+    if (getEmojiEffect(selectedControllerEffectId)) return selectedControllerEffectId;
+    return Object.keys(EMOJI_SOUND_MAP.effects || {})[0] || EMOJI_SOUND_MAP.fallbackEffectId || "";
+  }
+
+  function getFirstEmojiForEffect(effectId = "") {
+    const match = Object.entries(EMOJI_SOUND_MAP.emojiEffects || {}).find(([, mappedEffectId]) => {
+      return mappedEffectId === effectId;
+    });
+    return match?.[0] || "";
+  }
+
+  function playControllerEffect(pitchScale = 1, labelSuffix = "") {
+    const effectId = getControllerEffectId();
+    const effect = getEmojiEffect(effectId);
+    if (!effect) return;
+
+    const baseTuning = getEffectTuning(effectId);
+    const emoji = getFirstEmojiForEffect(effectId);
+    const label = `${emoji || effect.label} · ${effectId}${labelSuffix ? ` · ${labelSuffix}` : ""}`;
+    void playPlan([{
+      emoji,
+      effectId,
+      effect,
+      count: 1,
+      tuningOverride: { pitch: clamp(baseTuning.pitch * pitchScale, 0.65, 1.8) },
+    }], label);
+  }
+
+  function hydrateSynthEffectSelect() {
+    const select = $("synthEffectSelect");
+    if (!select) return;
+
+    const grouped = groupByEffect();
+    selectedControllerEffectId = grouped.some((entry) => entry.effectId === selectedControllerEffectId)
+      ? selectedControllerEffectId
+      : grouped[0]?.effectId || selectedControllerEffectId;
+
+    select.innerHTML = "";
+    grouped.forEach((entry) => {
+      const option = document.createElement("option");
+      option.value = entry.effectId;
+      option.textContent = `${entry.effect?.label || entry.effectId} · ${entry.emojis.slice(0, 4).join(" ")}`;
+      select.appendChild(option);
+    });
+    select.value = getControllerEffectId();
+    select.addEventListener("change", () => {
+      selectedControllerEffectId = select.value;
+      renderSynthTuningGrid();
+      renderSynthPadGrid();
+    });
+  }
+
+  function renderSynthTuningGrid() {
+    const root = $("synthTuningGrid");
+    if (!root) return;
+
+    const effectId = getControllerEffectId();
+    root.innerHTML = "";
+
+    const title = document.createElement("div");
+    title.className = "tuning-title";
+    title.textContent = "Instrument Tuning";
+    root.appendChild(title);
+
+    TUNING_CONTROLS.forEach((config) => {
+      const control = createTuningControl(effectId, config);
+      root.appendChild(control.wrap);
+    });
+  }
+
+  function renderSynthPresetRow() {
+    const root = $("synthPresetRow");
+    if (!root) return;
+
+    root.innerHTML = "";
+    SYNTH_PRESETS.forEach((preset) => {
+      const button = document.createElement("button");
+      button.className = "ghost tiny";
+      button.type = "button";
+      button.textContent = preset.label;
+      button.addEventListener("click", () => {
+        const effectId = getControllerEffectId();
+        setEffectTuningValues(effectId, preset.tuning);
+        playControllerEffect(1, preset.label);
+      });
+      root.appendChild(button);
+    });
+  }
+
+  function renderSynthPadGrid() {
+    const root = $("synthPadGrid");
+    if (!root) return;
+
+    root.innerHTML = "";
+    SYNTH_PADS.forEach((pad) => {
+      const button = document.createElement("button");
+      button.className = "synth-pad";
+      button.type = "button";
+      button.innerHTML = `<strong>${escapeHtml(pad.label)}</strong><span>${escapeHtml(pad.note)}</span>`;
+      button.addEventListener("click", () => playControllerEffect(pad.pitchScale, pad.label));
+      root.appendChild(button);
+    });
+  }
+
+  function bindSynthController() {
+    hydrateSynthEffectSelect();
+    renderSynthTuningGrid();
+    renderSynthPresetRow();
+    renderSynthPadGrid();
+
+    $("playSynthControllerBtn")?.addEventListener("click", () => playControllerEffect());
+    $("resetSynthControllerBtn")?.addEventListener("click", () => {
+      const effectId = getControllerEffectId();
+      resetEffectTuning(effectId);
+      playControllerEffect(1, "Reset");
+    });
+  }
+
   function bindControls() {
     $("composer")?.addEventListener("input", updateComposerPreview);
 
@@ -1180,6 +1350,7 @@
     hydrateStats();
     renderEffectGrid();
     renderEmojiGrid();
+    bindSynthController();
     bindControls();
     updateComposerPreview();
     setStatus("대기 중");
