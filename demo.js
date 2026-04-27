@@ -1485,6 +1485,26 @@
       saveTuningState();
       renderEffectGrid();
       setStatus(`현재 신스 톤을 ${targetEffectId}에 반영했어요.`);
+
+      const readoutNote = $("synthReadoutNote");
+      if (readoutNote) {
+        const previous = readoutNote.textContent;
+        readoutNote.textContent = `→ ${targetEffectId}`;
+        clearTimeout(readoutNote._restoreTimer);
+        readoutNote._restoreTimer = setTimeout(() => {
+          readoutNote.textContent = previous;
+        }, 1400);
+      }
+
+      const applyBtn = $("synthApplyBtn");
+      if (applyBtn) {
+        const original = applyBtn.textContent;
+        applyBtn.textContent = `✓ ${targetEffectId} 반영됨`;
+        clearTimeout(applyBtn._restoreTimer);
+        applyBtn._restoreTimer = setTimeout(() => {
+          applyBtn.textContent = original;
+        }, 1400);
+      }
     });
 
     document.addEventListener("keydown", (event) => {
