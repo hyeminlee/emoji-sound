@@ -1176,12 +1176,381 @@
     if ($("previewPairCount")) $("previewPairCount").textContent = String(previewPairCount);
   }
 
+  const SYNTH_DEFAULTS = Object.freeze({
+    wave: "sine",
+    detune: 0,
+    semitone: 0,
+    cutoff: 2400,
+    resonance: 0.7,
+    drive: 1,
+    attack: 8,
+    decay: 300,
+    release: 220,
+    volume: 0.7,
+    glide: 0,
+    octave: 4,
+  });
+
+  const synthState = { ...SYNTH_DEFAULTS };
+  const activeSynthVoices = new Map();
+  let synthMasterGain = null;
+
+  const NOTE_LAYOUT = [
+    { note: "C", semitone: 0, type: "white", binding: "A" },
+    { note: "C#", semitone: 1, type: "black", binding: "W" },
+    { note: "D", semitone: 2, type: "white", binding: "S" },
+    { note: "D#", semitone: 3, type: "black", binding: "E" },
+    { note: "E", semitone: 4, type: "white", binding: "D" },
+    { note: "F", semitone: 5, type: "white", binding: "F" },
+    { note: "F#", semitone: 6, type: "black", binding: "T" },
+    { note: "G", semitone: 7, type: "white", binding: "G" },
+    { note: "G#", semitone: 8, type: "black", binding: "Y" },
+    { note: "A", semitone: 9, type: "white", binding: "H" },
+    { note: "A#", semitone: 10, type: "black", binding: "U" },
+    { note: "B", semitone: 11, type: "white", binding: "J" },
+    { note: "C+", semitone: 12, type: "white", binding: "K" },
+  ];
+
+  const KEY_BINDINGS = Object.fromEntries(
+    NOTE_LAYOUT.map((entry, index) => [entry.binding.toLowerCase(), index])
+  );
+
+  function midiFromIndex(index) {
+    return 12 * (synthState.octave + 1) + NOTE_LAYOUT[index].semitone + synthState.semitone;
+  }
+
+  function frequencyFromMidi(midi) {
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  }
+
+  function noteLabelFromMidi(midi) {
+    const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const octave = Math.floor(midi / 12) - 1;
+    const name = names[((midi % 12) + 12) % 12];
+    return `${name}${octave}`;
+  }
+
+  function setSynthValue(key, value) {
+    synthState[key] = value;
+    updateSynthReadout();
+  }
+
+  function updateSynthReadout() {
+    const el = $("synthReadoutWave");
+    if (el) el.textContent = synthState.wave.toUpperCase();
+    const labelEl = $("synthOctaveLabel");
+    if (labelEl) labelEl.textContent = `C${synthState.octave}`;
+  }
+
+  function ensureSynthMaster(ctx) {
+    if (!synthMasterGain || synthMasterGain.context !== ctx) {
+      synthMasterGain = ctx.createGain();
+      synthMasterGain.connect(ctx.destination);
+    }
+    synthMasterGain.gain.value = synthState.volume;
+    return synthMasterGain;
+  }
+
+  async function startSynthVoice(noteIndex) {
+    const ctx = await getAudioContext();
+    if (!ctx) return;
+
+    if (activeSynthVoices.has(noteIndex)) {
+      stopSynthVoice(noteIndex);
+    }
+
+    const master = ensureSynthMaster(ctx);
+    const now = ctx.currentTime;
+    const midi = midiFromIndex(noteIndex);
+    const targetFreq = frequencyFromMidi(midi);
+    const lastVoice = Array.from(activeSynthVoices.values()).pop();
+    const startFreq = lastVoice && synthState.glide > 0 ? lastVoice.lastFreq : targetFreq;
+
+    const oscillator = ctx.createOscillator();
+    oscillator.type = synthState.wave;
+    oscillator.detune.value = synthState.detune;
+    oscillator.frequency.setValueAtTime(startFreq, now);
+    if (synthState.glide > 0) {
+      oscillator.frequency.linearRampToValueAtTime(targetFreq, now + synthState.glide / 1000);
+    } else {
+      oscillator.frequency.setValueAtTime(targetFreq, now);
+    }
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = synthState.cutoff;
+    filter.Q.value = synthState.resonance;
+
+    const drive = ctx.createGain();
+    drive.gain.value = synthState.drive;
+
+    const ampGain = ctx.createGain();
+    const peak = 0.32;
+    const attackSeconds = Math.max(0.002, synthState.attack / 1000);
+    ampGain.gain.cancelScheduledValues(now);
+    ampGain.gain.setValueAtTime(0.0001, now);
+    ampGain.gain.linearRampToValueAtTime(peak, now + attackSeconds);
+
+    oscillator.connect(filter);
+    filter.connect(drive);
+    drive.connect(ampGain);
+    ampGain.connect(master);
+
+    oscillator.start(now);
+
+    const voice = { oscillator, filter, drive, ampGain, lastFreq: targetFreq, midi };
+    activeSynthVoices.set(noteIndex, voice);
+
+    const lastEl = $("synthLastNote");
+    if (lastEl) lastEl.textContent = `마지막 노트: ${noteLabelFromMidi(midi)} · ${targetFreq.toFixed(1)} Hz`;
+    const readoutNote = $("synthReadoutNote");
+    if (readoutNote) readoutNote.textContent = noteLabelFromMidi(midi);
+    updateSynthReadout();
+
+    const decaySeconds = synthState.decay / 1000;
+    const releaseSeconds = Math.max(0.04, synthState.release / 1000);
+    const sustainEnd = now + attackSeconds + decaySeconds;
+    voice.autoEnd = setTimeout(() => {
+      stopSynthVoice(noteIndex);
+    }, (attackSeconds + decaySeconds + releaseSeconds) * 1000 + 80);
+    voice.sustainEnd = sustainEnd;
+    voice.releaseSeconds = releaseSeconds;
+
+    const keyEl = document.querySelector(`[data-key-index="${noteIndex}"]`);
+    if (keyEl) keyEl.classList.add("active");
+  }
+
+  function stopSynthVoice(noteIndex) {
+    const voice = activeSynthVoices.get(noteIndex);
+    if (!voice) return;
+    activeSynthVoices.delete(noteIndex);
+    if (voice.autoEnd) clearTimeout(voice.autoEnd);
+
+    const ctx = voice.ampGain.context;
+    const now = ctx.currentTime;
+    const releaseSeconds = voice.releaseSeconds || 0.2;
+
+    voice.ampGain.gain.cancelScheduledValues(now);
+    const currentValue = Math.max(0.0001, voice.ampGain.gain.value);
+    voice.ampGain.gain.setValueAtTime(currentValue, now);
+    voice.ampGain.gain.exponentialRampToValueAtTime(0.0001, now + releaseSeconds);
+
+    try { voice.oscillator.stop(now + releaseSeconds + 0.05); } catch (e) {}
+    setTimeout(() => {
+      try { voice.oscillator.disconnect(); } catch (e) {}
+      try { voice.filter.disconnect(); } catch (e) {}
+      try { voice.drive.disconnect(); } catch (e) {}
+      try { voice.ampGain.disconnect(); } catch (e) {}
+    }, releaseSeconds * 1000 + 120);
+
+    const keyEl = document.querySelector(`[data-key-index="${noteIndex}"]`);
+    if (keyEl) keyEl.classList.remove("active");
+  }
+
+  function buildSynthKeyboard() {
+    const container = $("synthKeyboard");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const whiteCount = NOTE_LAYOUT.filter((n) => n.type === "white").length;
+    const whiteWidth = 100 / whiteCount;
+    let whiteIndex = 0;
+
+    const whiteIndexMap = NOTE_LAYOUT.map((n) => {
+      if (n.type === "white") {
+        const value = whiteIndex;
+        whiteIndex += 1;
+        return value;
+      }
+      return null;
+    });
+
+    NOTE_LAYOUT.forEach((entry, index) => {
+      const key = document.createElement("div");
+      key.className = `synth-key ${entry.type}`;
+      key.dataset.keyIndex = String(index);
+      key.setAttribute("role", "button");
+      key.setAttribute("aria-label", `${entry.note} key`);
+
+      key.innerHTML = `<span class="key-binding">${entry.binding}</span><span class="key-note">${entry.note}</span>`;
+
+      if (entry.type === "white") {
+        key.style.left = `${whiteIndexMap[index] * whiteWidth}%`;
+        key.style.width = `calc(${whiteWidth}% - 2px)`;
+      } else {
+        let prevWhite = index - 1;
+        while (prevWhite >= 0 && NOTE_LAYOUT[prevWhite].type !== "white") prevWhite -= 1;
+        const leftPercent = (whiteIndexMap[prevWhite] + 1) * whiteWidth;
+        const blackWidthPercent = whiteWidth * 0.62;
+        key.style.left = `calc(${leftPercent}% - ${blackWidthPercent / 2}%)`;
+        key.style.width = `${blackWidthPercent}%`;
+      }
+
+      const onDown = (event) => {
+        event.preventDefault();
+        void startSynthVoice(index);
+      };
+      const onUp = () => stopSynthVoice(index);
+
+      key.addEventListener("pointerdown", onDown);
+      key.addEventListener("pointerup", onUp);
+      key.addEventListener("pointerleave", onUp);
+      key.addEventListener("pointercancel", onUp);
+
+      container.appendChild(key);
+    });
+  }
+
+  function bindSynthRange(id, valueId, key, formatter) {
+    const input = $(id);
+    const display = $(valueId);
+    if (!input) return;
+    const apply = (raw) => {
+      const value = Number(raw);
+      synthState[key] = value;
+      if (display) display.textContent = formatter(value);
+      activeSynthVoices.forEach((voice) => {
+        if (key === "cutoff") voice.filter.frequency.setTargetAtTime(value, voice.ampGain.context.currentTime, 0.02);
+        if (key === "resonance") voice.filter.Q.setTargetAtTime(value, voice.ampGain.context.currentTime, 0.02);
+        if (key === "drive") voice.drive.gain.setTargetAtTime(value, voice.ampGain.context.currentTime, 0.02);
+        if (key === "detune") voice.oscillator.detune.setTargetAtTime(value, voice.ampGain.context.currentTime, 0.02);
+        if (key === "volume" && synthMasterGain) synthMasterGain.gain.setTargetAtTime(value, voice.ampGain.context.currentTime, 0.02);
+      });
+      if (key === "volume" && synthMasterGain) {
+        synthMasterGain.gain.value = value;
+      }
+    };
+    input.addEventListener("input", () => apply(input.value));
+    apply(input.value);
+  }
+
+  function bindSynthControls() {
+    if (!$("synthKeyboard")) return;
+
+    document.querySelectorAll("#synthWave .synth-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll("#synthWave .synth-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        synthState.wave = chip.dataset.wave || "sine";
+        activeSynthVoices.forEach((voice) => {
+          voice.oscillator.type = synthState.wave;
+        });
+        updateSynthReadout();
+      });
+    });
+
+    bindSynthRange("synthDetune", "synthDetuneValue", "detune", (v) => `${v.toFixed(0)} cent`);
+    bindSynthRange("synthSemitone", "synthSemitoneValue", "semitone", (v) => `${v >= 0 ? "+" : ""}${v.toFixed(0)} st`);
+    bindSynthRange("synthCutoff", "synthCutoffValue", "cutoff", (v) => `${v.toFixed(0)} Hz`);
+    bindSynthRange("synthResonance", "synthResonanceValue", "resonance", (v) => `${v.toFixed(1)} Q`);
+    bindSynthRange("synthDrive", "synthDriveValue", "drive", (v) => `${v.toFixed(2)}x`);
+    bindSynthRange("synthAttack", "synthAttackValue", "attack", (v) => `${v.toFixed(0)} ms`);
+    bindSynthRange("synthDecay", "synthDecayValue", "decay", (v) => `${v.toFixed(0)} ms`);
+    bindSynthRange("synthRelease", "synthReleaseValue", "release", (v) => `${v.toFixed(0)} ms`);
+    bindSynthRange("synthVolume", "synthVolumeValue", "volume", (v) => `${Math.round(v * 100)}%`);
+    bindSynthRange("synthGlide", "synthGlideValue", "glide", (v) => `${v.toFixed(0)} ms`);
+
+    $("synthOctaveDown")?.addEventListener("click", () => {
+      synthState.octave = Math.max(1, synthState.octave - 1);
+      updateSynthReadout();
+    });
+    $("synthOctaveUp")?.addEventListener("click", () => {
+      synthState.octave = Math.min(7, synthState.octave + 1);
+      updateSynthReadout();
+    });
+
+    $("synthResetBtn")?.addEventListener("click", () => {
+      Object.assign(synthState, SYNTH_DEFAULTS);
+      hydrateSynthInputs();
+      updateSynthReadout();
+    });
+
+    $("synthApplyBtn")?.addEventListener("click", () => {
+      const targetEffectId = Object.keys(EMOJI_SOUND_MAP.effects || {}).find((id) =>
+        FEATURED_EFFECT_IDS.has(id)
+      ) || EMOJI_SOUND_MAP.fallbackEffectId;
+      if (!targetEffectId) {
+        setStatus("적용할 효과를 찾지 못했어요.");
+        return;
+      }
+      const tuning = getEffectTuning(targetEffectId);
+      const pitchScale = Math.pow(2, synthState.semitone / 12);
+      const intensityScale = synthState.volume / SYNTH_DEFAULTS.volume;
+      const speedScale = synthState.attack < 30 ? 1.1 : 0.9;
+      tuningState[targetEffectId] = sanitizeTuning({
+        speed: tuning.speed * speedScale,
+        pitch: tuning.pitch * pitchScale,
+        intensity: tuning.intensity * intensityScale,
+      });
+      saveTuningState();
+      renderEffectGrid();
+      setStatus(`현재 신스 톤을 ${targetEffectId}에 반영했어요.`);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.repeat) return;
+      const target = event.target;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+      const key = event.key.toLowerCase();
+      if (key === "z") {
+        synthState.octave = Math.max(1, synthState.octave - 1);
+        updateSynthReadout();
+        return;
+      }
+      if (key === "x") {
+        synthState.octave = Math.min(7, synthState.octave + 1);
+        updateSynthReadout();
+        return;
+      }
+      if (key in KEY_BINDINGS) {
+        event.preventDefault();
+        void startSynthVoice(KEY_BINDINGS[key]);
+      }
+    });
+
+    document.addEventListener("keyup", (event) => {
+      const key = event.key.toLowerCase();
+      if (key in KEY_BINDINGS) {
+        stopSynthVoice(KEY_BINDINGS[key]);
+      }
+    });
+  }
+
+  function hydrateSynthInputs() {
+    const map = {
+      synthDetune: ["detune", (v) => `${v.toFixed(0)} cent`],
+      synthSemitone: ["semitone", (v) => `${v >= 0 ? "+" : ""}${v.toFixed(0)} st`],
+      synthCutoff: ["cutoff", (v) => `${v.toFixed(0)} Hz`],
+      synthResonance: ["resonance", (v) => `${v.toFixed(1)} Q`],
+      synthDrive: ["drive", (v) => `${v.toFixed(2)}x`],
+      synthAttack: ["attack", (v) => `${v.toFixed(0)} ms`],
+      synthDecay: ["decay", (v) => `${v.toFixed(0)} ms`],
+      synthRelease: ["release", (v) => `${v.toFixed(0)} ms`],
+      synthVolume: ["volume", (v) => `${Math.round(v * 100)}%`],
+      synthGlide: ["glide", (v) => `${v.toFixed(0)} ms`],
+    };
+    Object.entries(map).forEach(([inputId, [stateKey, formatter]]) => {
+      const input = $(inputId);
+      const display = $(`${inputId}Value`);
+      if (!input) return;
+      input.value = String(synthState[stateKey]);
+      if (display) display.textContent = formatter(synthState[stateKey]);
+    });
+    document.querySelectorAll("#synthWave .synth-chip").forEach((chip) => {
+      chip.classList.toggle("active", chip.dataset.wave === synthState.wave);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     hydrateStats();
     renderEffectGrid();
     renderEmojiGrid();
     bindControls();
     updateComposerPreview();
+    buildSynthKeyboard();
+    bindSynthControls();
+    hydrateSynthInputs();
+    updateSynthReadout();
     setStatus("대기 중");
   });
 })();

@@ -597,6 +597,287 @@
       line-height: 1.6;
     }
 
+    .synth {
+      margin-top: 28px;
+      background: linear-gradient(180deg, #1c1f2c 0%, #0f1320 100%);
+      color: #f1efe7;
+      border-radius: var(--radius-xl);
+      padding: 24px 22px 26px;
+      box-shadow: 0 24px 60px rgba(10, 14, 24, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .synth-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .synth-header .eyebrow {
+      background: rgba(217, 111, 59, 0.18);
+      color: #ffb787;
+    }
+
+    .synth-header h2 {
+      margin: 8px 0 4px;
+      font-size: 26px;
+      letter-spacing: -0.04em;
+      color: #fff7ec;
+    }
+
+    .synth-header p {
+      margin: 0;
+      max-width: 560px;
+      color: #b8b9c4;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .synth-readout {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #ffb787;
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .synth-readout strong {
+      color: #fff7ec;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    .synth-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .synth-module {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+    }
+
+    .synth-module h3 {
+      margin: 0 0 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #a4a8bb;
+    }
+
+    .synth-control {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .synth-control:last-child {
+      margin-bottom: 0;
+    }
+
+    .synth-control-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #e7e6df;
+    }
+
+    .synth-control-head span {
+      color: #ffb787;
+      font-variant-numeric: tabular-nums;
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .synth-control input[type="range"] {
+      accent-color: #ffb787;
+    }
+
+    .synth-segmented {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .synth-segmented.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .synth-chip {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: #d6d6df;
+      border-radius: 10px;
+      padding: 9px 6px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+    }
+
+    .synth-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .synth-chip.active {
+      background: rgba(217, 111, 59, 0.85);
+      color: #1d1206;
+      border-color: rgba(255, 200, 150, 0.7);
+    }
+
+    .synth-row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .synth-row-actions button {
+      flex: 1 1 auto;
+    }
+
+    .synth-octave {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .synth-octave button {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: #f1efe7;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .synth-octave button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .synth-octave-label {
+      min-width: 36px;
+      text-align: center;
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      color: #ffb787;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .synth-keyboard-wrap {
+      margin-top: 18px;
+      padding: 14px 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .synth-keyboard-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: #a4a8bb;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .synth-keyboard {
+      position: relative;
+      height: 140px;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .synth-key {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      cursor: pointer;
+      border-radius: 0 0 8px 8px;
+      transition: background 80ms ease, box-shadow 80ms ease, transform 80ms ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .synth-key.white {
+      background: linear-gradient(180deg, #fbf8ee 0%, #e6dfc9 100%);
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      color: #6b614a;
+      z-index: 1;
+    }
+
+    .synth-key.white.active {
+      background: linear-gradient(180deg, #ffd49a 0%, #ffb16b 100%);
+      box-shadow: inset 0 4px 10px rgba(120, 60, 0, 0.3);
+      transform: translateY(1px);
+    }
+
+    .synth-key.black {
+      top: 0;
+      height: 62%;
+      background: linear-gradient(180deg, #2c2f3b 0%, #14161f 100%);
+      border: 1px solid rgba(0, 0, 0, 0.6);
+      color: #d6d6df;
+      z-index: 2;
+      border-radius: 0 0 6px 6px;
+    }
+
+    .synth-key.black.active {
+      background: linear-gradient(180deg, #d96f3b 0%, #8c3915 100%);
+      box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.6);
+      transform: translateY(1px);
+      color: #fff;
+    }
+
+    .synth-key .key-note {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+
+    .synth-key .key-binding {
+      font-size: 12px;
+    }
+
+    .synth-help {
+      margin-top: 10px;
+      color: #8d92a8;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     @media (max-width: 860px) {
       .top-grid {
         grid-template-columns: 1fr;
@@ -604,6 +885,10 @@
 
       .stats {
         grid-template-columns: 1fr;
+      }
+
+      .synth-keyboard {
+        height: 120px;
       }
     }
   </style>
@@ -652,6 +937,107 @@
           </div>
           <p class="footer-note">슬라이더 조정값은 이 데모 안에서 effect별로 따로 기억됩니다. 요청하신 `😂 / 🔥 / 👏 / ❤️ / 🎉` 대응 효과는 Featured 카드로 먼저 올려뒀고, 이제는 preview가 있는 effect마다 `synth / Freesound`를 같이 보관하면서 감정군, 설계 방식, valence/arousal 성격도 함께 관리합니다. 이번 확장에서는 `🍜 / 🐶 / 🌙 / 🚗 / 🔨 / 💻` 같은 범용 카테고리도 새 effect family로 들을 수 있습니다.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="synth" aria-label="Synth Studio">
+      <div class="synth-header">
+        <div>
+          <div class="eyebrow">Synth Studio</div>
+          <h2>악기처럼 조율하는 신스 컨트롤러</h2>
+          <p>웨이브 / 필터 / 엔벨로프 / 피치를 실시간으로 조절하면서, 화면 키보드나 컴퓨터 키보드(`A · S · D · F · G · H · J · K`)로 바로 연주할 수 있습니다. 설정한 톤은 우측 하단의 “현재 효과에 적용” 버튼으로 데모 카드에 즉시 반영됩니다.</p>
+        </div>
+        <div class="synth-readout" id="synthReadout">
+          <span>NOW</span>
+          <strong id="synthReadoutNote">A4</strong>
+          <span id="synthReadoutWave">SINE</span>
+        </div>
+      </div>
+
+      <div class="synth-grid">
+        <div class="synth-module" data-module="osc">
+          <h3>Oscillator</h3>
+          <div class="synth-segmented" id="synthWave" role="tablist" aria-label="Waveform">
+            <button class="synth-chip active" data-wave="sine" type="button">Sine</button>
+            <button class="synth-chip" data-wave="triangle" type="button">Tri</button>
+            <button class="synth-chip" data-wave="square" type="button">Sqr</button>
+            <button class="synth-chip" data-wave="sawtooth" type="button">Saw</button>
+          </div>
+          <div class="synth-control" style="margin-top: 12px;">
+            <div class="synth-control-head"><label for="synthDetune">Detune</label><span id="synthDetuneValue">0 cent</span></div>
+            <input id="synthDetune" type="range" min="-50" max="50" step="1" value="0" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthSemitone">Pitch shift</label><span id="synthSemitoneValue">0 st</span></div>
+            <input id="synthSemitone" type="range" min="-12" max="12" step="1" value="0" />
+          </div>
+        </div>
+
+        <div class="synth-module" data-module="filter">
+          <h3>Filter</h3>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthCutoff">Cutoff</label><span id="synthCutoffValue">2400 Hz</span></div>
+            <input id="synthCutoff" type="range" min="120" max="8000" step="10" value="2400" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthResonance">Resonance</label><span id="synthResonanceValue">0.7 Q</span></div>
+            <input id="synthResonance" type="range" min="0.1" max="14" step="0.1" value="0.7" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthDrive">Drive</label><span id="synthDriveValue">1.0x</span></div>
+            <input id="synthDrive" type="range" min="0.4" max="2.4" step="0.05" value="1" />
+          </div>
+        </div>
+
+        <div class="synth-module" data-module="env">
+          <h3>Amp Envelope</h3>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthAttack">Attack</label><span id="synthAttackValue">8 ms</span></div>
+            <input id="synthAttack" type="range" min="2" max="600" step="1" value="8" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthDecay">Sustain length</label><span id="synthDecayValue">300 ms</span></div>
+            <input id="synthDecay" type="range" min="60" max="1500" step="10" value="300" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthRelease">Release</label><span id="synthReleaseValue">220 ms</span></div>
+            <input id="synthRelease" type="range" min="40" max="1200" step="10" value="220" />
+          </div>
+        </div>
+
+        <div class="synth-module" data-module="master">
+          <h3>Master</h3>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthVolume">Volume</label><span id="synthVolumeValue">70%</span></div>
+            <input id="synthVolume" type="range" min="0" max="1" step="0.01" value="0.7" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label for="synthGlide">Glide</label><span id="synthGlideValue">0 ms</span></div>
+            <input id="synthGlide" type="range" min="0" max="500" step="5" value="0" />
+          </div>
+          <div class="synth-control">
+            <div class="synth-control-head"><label>Octave</label>
+              <span class="synth-octave">
+                <button id="synthOctaveDown" type="button" aria-label="Octave down">−</button>
+                <span class="synth-octave-label" id="synthOctaveLabel">C4</span>
+                <button id="synthOctaveUp" type="button" aria-label="Octave up">+</button>
+              </span>
+            </div>
+          </div>
+          <div class="synth-row-actions">
+            <button id="synthApplyBtn" class="primary tiny" type="button">현재 효과에 적용</button>
+            <button id="synthResetBtn" class="secondary tiny" type="button">기본값</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="synth-keyboard-wrap">
+        <div class="synth-keyboard-meta">
+          <span>한 옥타브 + 1키 · 클릭/터치/키보드 연주</span>
+          <span id="synthLastNote">마지막 노트: —</span>
+        </div>
+        <div id="synthKeyboard" class="synth-keyboard" role="group" aria-label="Synth keyboard"></div>
+        <div class="synth-help">키보드 단축키: 흰건반 <strong>A S D F G H J K</strong>, 검은건반 <strong>W E T Y U</strong> · 옥타브 이동 <strong>Z / X</strong></div>
       </div>
     </section>
 
