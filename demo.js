@@ -1493,7 +1493,7 @@
         clearTimeout(readoutNote._restoreTimer);
         readoutNote._restoreTimer = setTimeout(() => {
           readoutNote.textContent = previous;
-        }, 1400);
+        }, 2500);
       }
 
       const applyBtn = $("synthApplyBtn");
@@ -1503,7 +1503,7 @@
         clearTimeout(applyBtn._restoreTimer);
         applyBtn._restoreTimer = setTimeout(() => {
           applyBtn.textContent = original;
-        }, 1400);
+        }, 2500);
       }
     });
 
