@@ -68,12 +68,40 @@
     { key: "pitch", label: "피치", min: 0.65, max: 1.8, step: 0.01 },
     { key: "intensity", label: "강도", min: 0.45, max: 1.9, step: 0.01 },
   ];
+  const SYNTH_CONTROLLER_STORAGE_KEY = "emoji_sound_demo_synth_controller_v1";
+  const SYNTH_WAVEFORMS = new Set(["sine", "triangle", "sawtooth", "square"]);
+  const SYNTH_KEY_LAYOUT = Object.freeze([
+    { label: "C", semitone: 0, hotkey: "A" },
+    { label: "D", semitone: 2, hotkey: "S" },
+    { label: "E", semitone: 4, hotkey: "D" },
+    { label: "F", semitone: 5, hotkey: "F" },
+    { label: "G", semitone: 7, hotkey: "G" },
+    { label: "A", semitone: 9, hotkey: "H" },
+    { label: "B", semitone: 11, hotkey: "J" },
+    { label: "C", semitone: 12, hotkey: "K" },
+  ]);
+  const SYNTH_DEFAULT_STATE = Object.freeze({
+    waveform: "sine",
+    octave: 4,
+    attackMs: 20,
+    releaseMs: 260,
+    filterFreq: 1800,
+    filterQ: 1.4,
+    glideMs: 20,
+    gain: 0.16,
+  });
   const FREESOUND_COMPARISON_COPY = Object.freeze({
     rocket: "비교 결과 `🚀`는 아직 synth가 제일 안정적이라 유지하고, 다른 Freesound 후보는 비교용으로 남겨뒀습니다.",
     zap: "비교 결과 `⚡`는 너무 가벼운 pop보다 지금의 `Zap.wav` 계열이 존재감과 안정감이 더 좋았습니다.",
     buzz: "비교 결과 `❌`는 fail horn보다 짧고 둥근 `Pop.ogg` 계열이 더 재밌고 부담이 적었습니다.",
   });
   const tuningState = loadTuningState();
+  const synthControllerState = loadSynthControllerState();
+  const activeSynthVoices = new Map();
+  const synthHotkeyMap = new Map();
+  const activeSynthHotkeys = new Set();
+  let synthMasterGainNode = null;
+  let synthLastFrequency = 261.63;
 
   function $(id) {
     return document.getElementById(id);
@@ -178,6 +206,373 @@
     if (key === "speed") return `${value.toFixed(2)}x`;
     if (key === "pitch") return `${value.toFixed(2)}x`;
     return value.toFixed(2);
+  }
+
+  function sanitizeSynthControllerState(input = {}) {
+    return {
+      waveform: SYNTH_WAVEFORMS.has(input.waveform) ? input.waveform : SYNTH_DEFAULT_STATE.waveform,
+      octave: Math.round(clamp(Number(input.octave) || SYNTH_DEFAULT_STATE.octave, 2, 6)),
+      attackMs: Math.round(clamp(Number(input.attackMs) || SYNTH_DEFAULT_STATE.attackMs, 4, 220)),
+      releaseMs: Math.round(clamp(Number(input.releaseMs) || SYNTH_DEFAULT_STATE.releaseMs, 60, 1400)),
+      filterFreq: Math.round(clamp(Number(input.filterFreq) || SYNTH_DEFAULT_STATE.filterFreq, 200, 8000)),
+      filterQ: Number(clamp(Number(input.filterQ) || SYNTH_DEFAULT_STATE.filterQ, 0.2, 12).toFixed(1)),
+      glideMs: Math.round(clamp(Number(input.glideMs) || SYNTH_DEFAULT_STATE.glideMs, 0, 220)),
+      gain: Number(clamp(Number(input.gain) || SYNTH_DEFAULT_STATE.gain, 0.04, 0.45).toFixed(2)),
+    };
+  }
+
+  function loadSynthControllerState() {
+    try {
+      const raw = globalThis.localStorage?.getItem(SYNTH_CONTROLLER_STORAGE_KEY);
+      if (!raw) return { ...SYNTH_DEFAULT_STATE };
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") {
+        return { ...SYNTH_DEFAULT_STATE };
+      }
+      return sanitizeSynthControllerState({
+        ...SYNTH_DEFAULT_STATE,
+        ...parsed,
+      });
+    } catch (error) {
+      console.warn("Failed to load synth controller state:", error);
+      return { ...SYNTH_DEFAULT_STATE };
+    }
+  }
+
+  function saveSynthControllerState() {
+    try {
+      globalThis.localStorage?.setItem(SYNTH_CONTROLLER_STORAGE_KEY, JSON.stringify(synthControllerState));
+    } catch (error) {
+      console.warn("Failed to save synth controller state:", error);
+    }
+  }
+
+  function resetSynthControllerState() {
+    Object.assign(synthControllerState, { ...SYNTH_DEFAULT_STATE });
+    saveSynthControllerState();
+    return synthControllerState;
+  }
+
+  function isEditableElement(target) {
+    if (!target || !(target instanceof HTMLElement)) return false;
+    const tagName = target.tagName.toLowerCase();
+    if (target.isContentEditable) return true;
+    return tagName === "input" || tagName === "textarea" || tagName === "select";
+  }
+
+  function getSynthMasterGain(ctx) {
+    if (!synthMasterGainNode) {
+      synthMasterGainNode = ctx.createGain();
+      synthMasterGainNode.gain.value = synthControllerState.gain;
+      synthMasterGainNode.connect(ctx.destination);
+    }
+
+    synthMasterGainNode.gain.setTargetAtTime(synthControllerState.gain, ctx.currentTime, 0.01);
+    return synthMasterGainNode;
+  }
+
+  function getSynthNoteLabel(layoutItem) {
+    const octaveOffset = layoutItem.semitone >= 12 ? 1 : 0;
+    return `${layoutItem.label}${synthControllerState.octave + octaveOffset}`;
+  }
+
+  function getSynthFrequencyBySemitone(semitone = 0) {
+    const midi = (synthControllerState.octave + 1) * 12 + semitone;
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  }
+
+  function setSynthKeyActive(noteId = "", active = false) {
+    const key = document.querySelector(`[data-synth-note-id="${noteId}"]`);
+    if (key) {
+      key.classList.toggle("active", active);
+    }
+  }
+
+  function syncSynthUiValues() {
+    const synthWaveform = $("synthWaveform");
+    if (synthWaveform) synthWaveform.value = synthControllerState.waveform;
+
+    const synthOctave = $("synthOctave");
+    const synthAttack = $("synthAttack");
+    const synthRelease = $("synthRelease");
+    const synthFilterFreq = $("synthFilterFreq");
+    const synthFilterQ = $("synthFilterQ");
+    const synthGlide = $("synthGlide");
+    const synthGain = $("synthGain");
+
+    if (synthOctave) synthOctave.value = String(synthControllerState.octave);
+    if ($("synthOctaveValue")) $("synthOctaveValue").textContent = String(synthControllerState.octave);
+
+    if (synthAttack) synthAttack.value = String(synthControllerState.attackMs);
+    if ($("synthAttackValue")) $("synthAttackValue").textContent = `${synthControllerState.attackMs}ms`;
+
+    if (synthRelease) synthRelease.value = String(synthControllerState.releaseMs);
+    if ($("synthReleaseValue")) $("synthReleaseValue").textContent = `${synthControllerState.releaseMs}ms`;
+
+    if (synthFilterFreq) synthFilterFreq.value = String(synthControllerState.filterFreq);
+    if ($("synthFilterFreqValue")) $("synthFilterFreqValue").textContent = `${synthControllerState.filterFreq}Hz`;
+
+    if (synthFilterQ) synthFilterQ.value = String(synthControllerState.filterQ);
+    if ($("synthFilterQValue")) $("synthFilterQValue").textContent = synthControllerState.filterQ.toFixed(1);
+
+    if (synthGlide) synthGlide.value = String(synthControllerState.glideMs);
+    if ($("synthGlideValue")) $("synthGlideValue").textContent = `${synthControllerState.glideMs}ms`;
+
+    if (synthGain) synthGain.value = String(synthControllerState.gain);
+    if ($("synthGainValue")) $("synthGainValue").textContent = synthControllerState.gain.toFixed(2);
+  }
+
+  function applySynthStateToActiveVoices() {
+    if (audioContext && synthMasterGainNode) {
+      synthMasterGainNode.gain.setTargetAtTime(synthControllerState.gain, audioContext.currentTime, 0.01);
+    }
+
+    if (!audioContext || !activeSynthVoices.size) return;
+    const now = audioContext.currentTime;
+
+    activeSynthVoices.forEach((voice) => {
+      try {
+        voice.oscillator.type = synthControllerState.waveform;
+        voice.filter.frequency.setTargetAtTime(synthControllerState.filterFreq, now, 0.02);
+        voice.filter.Q.setTargetAtTime(synthControllerState.filterQ, now, 0.02);
+      } catch (error) {
+        console.warn("Failed to refresh synth voice:", error);
+      }
+    });
+  }
+
+  function renderSynthKeyboard() {
+    const root = $("synthKeyboard");
+    if (!root) return;
+
+    root.innerHTML = "";
+    synthHotkeyMap.clear();
+
+    SYNTH_KEY_LAYOUT.forEach((layoutItem, index) => {
+      const noteId = `synth-key-${index}`;
+      const key = document.createElement("button");
+      key.type = "button";
+      key.className = "synth-key";
+      key.dataset.synthNoteId = noteId;
+      key.innerHTML = `
+        <span class="synth-key-note">${getSynthNoteLabel(layoutItem)}</span>
+        <span class="synth-key-hotkey">${layoutItem.hotkey}</span>
+      `;
+
+      const releaseNote = () => {
+        stopSynthNote(noteId, { silent: true });
+      };
+
+      key.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        void startSynthNote(noteId, layoutItem);
+      });
+      key.addEventListener("pointerup", releaseNote);
+      key.addEventListener("pointercancel", releaseNote);
+      key.addEventListener("pointerleave", (event) => {
+        if ((event.buttons || 0) > 0) {
+          releaseNote();
+        }
+      });
+
+      synthHotkeyMap.set(layoutItem.hotkey, { noteId, layoutItem });
+      root.appendChild(key);
+    });
+  }
+
+  async function startSynthNote(noteId, layoutItem) {
+    if (activeSynthVoices.has(noteId)) return;
+
+    stopPlayback();
+    const ctx = await getAudioContext();
+    if (!ctx) {
+      setStatus("오디오 컨텍스트가 없어 Synth를 재생할 수 없어요.");
+      return;
+    }
+
+    const frequency = getSynthFrequencyBySemitone(layoutItem.semitone);
+    const now = ctx.currentTime;
+    const glideSeconds = Math.max(0, synthControllerState.glideMs / 1000);
+    const attackSeconds = Math.max(0.004, synthControllerState.attackMs / 1000);
+
+    const oscillator = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gainNode = ctx.createGain();
+    const destination = getSynthMasterGain(ctx);
+
+    oscillator.type = synthControllerState.waveform;
+    oscillator.frequency.setValueAtTime(Math.max(20, synthLastFrequency || frequency), now);
+    if (glideSeconds > 0.001) {
+      oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, frequency), now + glideSeconds);
+    } else {
+      oscillator.frequency.setValueAtTime(Math.max(20, frequency), now);
+    }
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(synthControllerState.filterFreq, now);
+    filter.Q.setValueAtTime(synthControllerState.filterQ, now);
+
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.linearRampToValueAtTime(1, now + attackSeconds);
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(destination);
+    oscillator.start(now);
+
+    activeSynthVoices.set(noteId, {
+      oscillator,
+      filter,
+      gainNode,
+      label: getSynthNoteLabel(layoutItem),
+    });
+    synthLastFrequency = frequency;
+    setSynthKeyActive(noteId, true);
+    setStatus(`Synth 연주 중 · ${getSynthNoteLabel(layoutItem)}`);
+  }
+
+  function stopSynthNote(noteId, options = {}) {
+    const voice = activeSynthVoices.get(noteId);
+    if (!voice) return false;
+
+    const releaseSeconds = Math.max(0.03, synthControllerState.releaseMs / 1000);
+    const now = audioContext?.currentTime || 0;
+
+    try {
+      voice.gainNode.gain.cancelScheduledValues(now);
+      voice.gainNode.gain.setValueAtTime(Math.max(0.0001, voice.gainNode.gain.value), now);
+      voice.gainNode.gain.exponentialRampToValueAtTime(0.0001, now + releaseSeconds);
+    } catch (error) {
+      console.warn("Failed to apply synth release envelope:", error);
+    }
+
+    try {
+      voice.oscillator.stop(now + releaseSeconds + 0.03);
+    } catch (error) {}
+
+    globalThis.setTimeout(() => {
+      try { voice.oscillator.disconnect(); } catch (error) {}
+      try { voice.filter.disconnect(); } catch (error) {}
+      try { voice.gainNode.disconnect(); } catch (error) {}
+    }, Math.ceil(releaseSeconds * 1000) + 90);
+
+    activeSynthVoices.delete(noteId);
+    setSynthKeyActive(noteId, false);
+
+    if (!options.silent && activeSynthVoices.size === 0) {
+      setStatus(`Synth 노트 종료 · ${voice.label}`);
+    }
+
+    return true;
+  }
+
+  function stopAllSynthVoices(statusText = "Synth 노트 정지됨") {
+    if (!activeSynthVoices.size) return false;
+
+    Array.from(activeSynthVoices.keys()).forEach((noteId) => {
+      stopSynthNote(noteId, { silent: true });
+    });
+    activeSynthHotkeys.clear();
+    setStatus(statusText);
+    return true;
+  }
+
+  function playSynthChord() {
+    const chordSemitones = [0, 4, 7];
+    const holdMs = 450;
+
+    chordSemitones.forEach((semitone) => {
+      const entry = Array.from(synthHotkeyMap.values()).find((item) => item.layoutItem.semitone === semitone);
+      if (!entry) return;
+      void startSynthNote(entry.noteId, entry.layoutItem);
+      globalThis.setTimeout(() => {
+        stopSynthNote(entry.noteId, { silent: true });
+      }, holdMs);
+    });
+  }
+
+  function bindSynthController() {
+    syncSynthUiValues();
+    renderSynthKeyboard();
+
+    const waveformSelect = $("synthWaveform");
+    waveformSelect?.addEventListener("change", () => {
+      synthControllerState.waveform = SYNTH_WAVEFORMS.has(waveformSelect.value)
+        ? waveformSelect.value
+        : SYNTH_DEFAULT_STATE.waveform;
+      saveSynthControllerState();
+      applySynthStateToActiveVoices();
+    });
+
+    const bindRange = (id, key, parser) => {
+      const input = $(id);
+      if (!input) return;
+      input.addEventListener("input", () => {
+        synthControllerState[key] = parser(input.value);
+        Object.assign(synthControllerState, sanitizeSynthControllerState(synthControllerState));
+        saveSynthControllerState();
+        syncSynthUiValues();
+        applySynthStateToActiveVoices();
+        if (key === "octave") {
+          renderSynthKeyboard();
+        }
+      });
+    };
+
+    bindRange("synthOctave", "octave", (value) => Number(value));
+    bindRange("synthAttack", "attackMs", (value) => Number(value));
+    bindRange("synthRelease", "releaseMs", (value) => Number(value));
+    bindRange("synthFilterFreq", "filterFreq", (value) => Number(value));
+    bindRange("synthFilterQ", "filterQ", (value) => Number(value));
+    bindRange("synthGlide", "glideMs", (value) => Number(value));
+    bindRange("synthGain", "gain", (value) => Number(value));
+
+    $("synthChordBtn")?.addEventListener("click", () => {
+      playSynthChord();
+      setStatus("Synth 코드 재생 · C major");
+    });
+
+    $("synthStopBtn")?.addEventListener("click", () => {
+      if (!stopAllSynthVoices("Synth 노트 정지됨")) {
+        setStatus("정지할 Synth 노트가 없어요.");
+      }
+    });
+
+    $("synthResetBtn")?.addEventListener("click", () => {
+      resetSynthControllerState();
+      syncSynthUiValues();
+      renderSynthKeyboard();
+      applySynthStateToActiveVoices();
+      setStatus("Synth 컨트롤러를 초기값으로 되돌렸어요.");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.repeat || isEditableElement(event.target)) return;
+      const hotkey = String(event.key || "").toUpperCase();
+      const entry = synthHotkeyMap.get(hotkey);
+      if (!entry) return;
+      event.preventDefault();
+      if (activeSynthHotkeys.has(hotkey)) return;
+      activeSynthHotkeys.add(hotkey);
+      void startSynthNote(entry.noteId, entry.layoutItem);
+    });
+
+    document.addEventListener("keyup", (event) => {
+      const hotkey = String(event.key || "").toUpperCase();
+      const entry = synthHotkeyMap.get(hotkey);
+      if (!entry) return;
+      event.preventDefault();
+      activeSynthHotkeys.delete(hotkey);
+      if (!stopSynthNote(entry.noteId, { silent: true })) return;
+      if (activeSynthVoices.size === 0) {
+        setStatus("Synth 노트 정지됨");
+      }
+    });
+
+    globalThis.addEventListener("blur", () => {
+      activeSynthHotkeys.clear();
+      stopAllSynthVoices("Synth 노트 정지됨");
+    });
   }
 
   function segmentGraphemes(text = "") {
@@ -1161,6 +1556,7 @@
 
     $("stopBtn")?.addEventListener("click", () => {
       stopPlayback();
+      stopAllSynthVoices("정지됨");
       setStatus("정지됨");
     });
   }
@@ -1180,6 +1576,7 @@
     hydrateStats();
     renderEffectGrid();
     renderEmojiGrid();
+    bindSynthController();
     bindControls();
     updateComposerPreview();
     setStatus("대기 중");

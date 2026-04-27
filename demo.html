@@ -128,6 +128,17 @@
       accent-color: var(--accent);
     }
 
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fffdf8;
+    }
+
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -597,6 +608,85 @@
       line-height: 1.6;
     }
 
+    .synth-panel {
+      margin-top: 18px;
+    }
+
+    .synth-control-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .synth-field {
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .synth-value {
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .synth-key-help {
+      margin-top: 14px;
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .synth-keyboard {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .synth-key {
+      border: 1px solid rgba(29, 35, 48, 0.1);
+      border-radius: 14px;
+      background: #fffdfa;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 100ms ease, box-shadow 100ms ease, background 100ms ease;
+      user-select: none;
+      box-shadow: 0 6px 12px rgba(20, 25, 35, 0.06);
+    }
+
+    .synth-key:hover {
+      transform: translateY(-1px);
+    }
+
+    .synth-key.active {
+      background: rgba(217, 111, 59, 0.16);
+      border-color: rgba(217, 111, 59, 0.38);
+      box-shadow: 0 9px 20px rgba(217, 111, 59, 0.16);
+      transform: translateY(0);
+    }
+
+    .synth-key-note {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .synth-key-hotkey {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--sub);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
     @media (max-width: 860px) {
       .top-grid {
         grid-template-columns: 1fr;
@@ -651,6 +741,49 @@
             </div>
           </div>
           <p class="footer-note">슬라이더 조정값은 이 데모 안에서 effect별로 따로 기억됩니다. 요청하신 `😂 / 🔥 / 👏 / ❤️ / 🎉` 대응 효과는 Featured 카드로 먼저 올려뒀고, 이제는 preview가 있는 effect마다 `synth / Freesound`를 같이 보관하면서 감정군, 설계 방식, valence/arousal 성격도 함께 관리합니다. 이번 확장에서는 `🍜 / 🐶 / 🌙 / 🚗 / 🔨 / 💻` 같은 범용 카테고리도 새 effect family로 들을 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="panel synth-panel">
+        <h2>Synth 조율 컨트롤러</h2>
+        <p>파형, 엔벌로프, 필터를 손으로 조절하고 키보드로 즉시 연주할 수 있습니다. 카드의 effect 튜닝과 별개로 저장됩니다.</p>
+        <div class="synth-control-grid">
+          <label class="synth-field">파형
+            <select id="synthWaveform">
+              <option value="sine">Sine</option>
+              <option value="triangle">Triangle</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="square">Square</option>
+            </select>
+          </label>
+          <label class="synth-field">옥타브 <span id="synthOctaveValue" class="synth-value">4</span>
+            <input id="synthOctave" type="range" min="2" max="6" step="1" value="4" />
+          </label>
+          <label class="synth-field">Attack <span id="synthAttackValue" class="synth-value">20ms</span>
+            <input id="synthAttack" type="range" min="4" max="220" step="1" value="20" />
+          </label>
+          <label class="synth-field">Release <span id="synthReleaseValue" class="synth-value">260ms</span>
+            <input id="synthRelease" type="range" min="60" max="1400" step="10" value="260" />
+          </label>
+          <label class="synth-field">Filter Cutoff <span id="synthFilterFreqValue" class="synth-value">1800Hz</span>
+            <input id="synthFilterFreq" type="range" min="200" max="8000" step="10" value="1800" />
+          </label>
+          <label class="synth-field">Resonance(Q) <span id="synthFilterQValue" class="synth-value">1.4</span>
+            <input id="synthFilterQ" type="range" min="0.2" max="12" step="0.1" value="1.4" />
+          </label>
+          <label class="synth-field">Glide <span id="synthGlideValue" class="synth-value">20ms</span>
+            <input id="synthGlide" type="range" min="0" max="220" step="1" value="20" />
+          </label>
+          <label class="synth-field">Output Gain <span id="synthGainValue" class="synth-value">0.16</span>
+            <input id="synthGain" type="range" min="0.04" max="0.45" step="0.01" value="0.16" />
+          </label>
+        </div>
+        <div class="synth-key-help">컴퓨터 키보드 A S D F G H J K 로도 연주할 수 있어요.</div>
+        <div id="synthKeyboard" class="synth-keyboard"></div>
+        <div class="mini-actions">
+          <button id="synthChordBtn" class="ghost tiny" type="button">C 메이저 코드</button>
+          <button id="synthStopBtn" class="secondary tiny" type="button">노트 정지</button>
+          <button id="synthResetBtn" class="ghost tiny" type="button">컨트롤러 초기화</button>
         </div>
       </div>
     </section>
